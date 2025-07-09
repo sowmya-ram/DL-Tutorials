@@ -146,6 +146,9 @@ end
 
 #HW TODO - Check why the MLP using Lux.jl was faster than CNN using Flux?
 
+# Compare MLP in FLUX and LUX => which library
+# Compare CNN and MLP in one library => which architecture
+
 @show train_log
 
 # We can re-run the quick sanity-check of predictions:

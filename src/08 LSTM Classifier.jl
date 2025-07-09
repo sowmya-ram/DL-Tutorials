@@ -21,6 +21,12 @@ function get_dataloaders(; dataset_size=1000, sequence_length=1000)
         DataLoader(collect.((x_val, y_val)); batchsize=128, shuffle=false))
 end
 
+plot(x_data[1, 1:100, 1], x_data[2, 1:100, 1], label="1")
+plot!(x_data[1, 101:200, 1], x_data[2, 101:200, 1], label="2")
+plot!(x_data[1, 200:300, 1], x_data[2, 200:300, 1], label="3")
+plot!(x_data[1, 300:500, 1], x_data[2, 300:500, 1], label="4")
+plot!(x_data[1, 500:800, 1], x_data[2, 500:800, 1], label="5")
+
 struct SpiralClassifier{L,C} <: Lux.AbstractLuxContainerLayer{(:lstm_cell, :classifier)}
     lstm_cell::L
     classifier::C
