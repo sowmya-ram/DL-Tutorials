@@ -143,3 +143,29 @@ mode.(ŷ)
 
 
 #HW TODO - Evaluate your LogisticClassifier using 10-folds
+X_cv = select(X, Not([:Year, :Today]))
+y_cv = coerce(y, OrderedFactor)
+ 
+# Define the model and machine
+model = LogisticClassifier()
+mach = machine(model, X_cv, y_cv)
+ 
+cv_results = evaluate!(mach, resampling=CV(nfolds=10, shuffle=true),
+                       measures=[accuracy, cross_entropy, f1score],
+                       verbosity=1)
+ 
+# Print results rounded to 3 significant digits
+println("10-Fold Cross-Validation Results:")
+println("Average Accuracy: ", r3(cv_results.measurement[1]))
+println("Average Cross-Entropy: ", r3(cv_results.measurement[2]))
+println("Average F1 Score: ", r3(cv_results.measurement[3]))
+    # Define the model
+    model = LogisticClassifier()
+    
+    # Create machine
+    mach = machine(model, X, y)
+    
+    # Perform 10-fold cross-validation using measure symbols
+    cv = CV(nfolds=n_folds, shuffle=true, rng=123)
+    # eval_results = evaluate!(mach, r
+    eval_results = evaluate!(mach, resampli

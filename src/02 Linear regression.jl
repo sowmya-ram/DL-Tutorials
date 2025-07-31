@@ -8,7 +8,8 @@
 #
 # To load the model from a given package use `@load ModelName pkg=PackageName`
 
-using MLJ
+using MLJ, MLJLinearModels, RDatasets, DataFrames, Plots, StatsBase, Statistics
+
 models()
 
 filter(model) = model.is_pure_julia && model.is_supervised && model.prediction_type == :probabilistic
