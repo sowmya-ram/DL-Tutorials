@@ -114,3 +114,68 @@ train_log_20k = train_model!(lenet5, train_loader_20k, 3, joinpath(folder, "lene
 train_loader_30k = loader(train_x, train_y; batchsize=32, subset=30000)
 train_log_30k = train_model!(lenet5, train_loader_30k, 2, joinpath(folder, "lenet_30k.jld2"))
 
+# Task 4
+# Function to visualize feature maps for three samples
+function visualize_features(model, samples)
+    # Create a plot with 3 rows (one for each sample) and up to 8 columns
+    p = plot(layout=(3, 8), size=(1200, 600), titlefont=font(10))
+    
+    for (i, sample) in enumerate(samples)
+        # Preprocess the sample (32×32×3) and add batch dimension (32×32×3×1)
+        x = loader(sample[:, :, :, 1:1])
+        
+        # Plot original image (show first channel for simplicity, as RGB)
+        plot!(p[i,1], heatmap(x[:, :, 1, 1], title="Original", c=:grays, clim=(0,1)), 
+              aspect_ratio=:equal)
+        
+        # After first conv layer (Conv1): 32×32×6
+        conv1_out = model[1](x)
+        for j in 1:min(3, size(conv1_out, 3))  # Show up to 3 channels
+            plot!(p[i,1+j], heatmap(conv1_out[:, :, j, 1], title="Conv1 Ch$j", c=:viridis), 
+                  aspect_ratio=:equal)
+        end
+        
+        # After first pooling layer (Pool1): 16×16×6
+        pool1_out = model[1:2](x)
+        for j in 1:min(3, size(pool1_out, 3))  # Show up to 3 channels
+            plot!(p[i,4+j], heatmap(pool1_out[:, :, j, 1], title="Pool1 Ch$j", c=:viridis), 
+                  aspect_ratio=:equal)
+        end
+        
+        # After second conv layer (Conv2): 16×16×16
+        conv2_out = model[1:3](x)
+        for j in 1:1  # Show only 1 channel due to large number of channels
+            plot!(p[i,7+j], heatmap(conv2_out[:, :, j, 1], title="Conv2 Ch$j", c=:viridis), 
+                  aspect_ratio=:equal)
+        end
+    end
+    
+    # Save the plot
+    savefig(joinpath(folder, "feature_maps_lenet3.png"))
+    return p
+end
+
+# Select 3 random test samples
+sample_indices = shuffle(1:size(test_x, 4))[1:3]
+samples = test_x[:, :, :, sample_indices]
+
+# Visualize feature maps
+visualize_features(lenet3, samples)
+
+using StatsBase, Plots
+
+function check_balance(labels, dataset_name::String)
+    # Count samples per class
+    class_counts = countmap(labels)
+    
+    # Sort by class index (0:9) for consistent display
+    sorted_counts = [get(class_counts, i, 0) for i in 0:9]
+    
+    println("$dataset_name Class Distribution:")
+    for (class, count) in enumerate(sorted_counts)
+        println("Class $(class-1): $count samples")
+    end
+end
+
+check_balance(train_y, "Training")
+check_balance(test_y, "Testing")
